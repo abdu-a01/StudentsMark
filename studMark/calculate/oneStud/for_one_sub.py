@@ -1,4 +1,7 @@
+from .utility_modules.one_stud_support import checkMark
+
 def giveGrade(result:float) -> tuple:
+	result = checkMark(result)
 	if result >= 90:
 		grade = "A+"
 		point = 4.0
@@ -45,6 +48,5 @@ def gradeFun(mark:float) -> str:
 
 
 def pointFun(mark:float) -> float:
-	return giveGrade(mark)[1]
-	
+	return giveGrade(mark)[1]	
 	
