@@ -1,13 +1,3 @@
-class MinMarkError(Exception):
-	pass
-
-class NotNumberError(Exception):
-	pass
-	
-class NotEqualIndexError(Exception):
-	pass
-
-
 def checkFile(input_data): 
 	if type(input_data) == dict:
 		return input_data.copy()

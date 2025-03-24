@@ -1,5 +1,4 @@
-from .oneStud.for_one_sub import gradeFun
-from .oneStud.for_multi_sub import gpa
+from .oneStud.for_one_sub import gradeFun,gpa
 from .oneStud.utility_modules.mult_stud_support import (
 	list_item_extract,dict_mark_extractor,mult_gpa_grade
 )

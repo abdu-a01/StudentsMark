@@ -1,4 +1,4 @@
-from .utility_modules.one_stud_support import checkMark
+from .utility_modules.one_stud_support import checkMark,checkIndex
 
 def giveGrade(result:float) -> tuple:
 	result = checkMark(result)
@@ -49,4 +49,12 @@ def gradeFun(mark:float) -> str:
 
 def pointFun(mark:float) -> float:
 	return giveGrade(mark)[1]	
+
+
+def gpa(marks:list,crs:list) -> float:
+	checkIndex(marks,crs)
+	pMarks = [pointFun(marks[_])*crs[_] for _ in range(len(marks))]
 	
+	Gpa = sum(pMarks)/sum(crs)
+	
+	return round(Gpa,2)
