@@ -1,38 +1,18 @@
 from .oneStud.for_one_sub import gradeFun
 from .oneStud.for_multi_sub import gpa
+from .oneStud.utility_modules.mult_stud_support import (
+	list_item_extract,dict_mark_extractor,mult_gpa_grade
+)
+from .oneStud.utility_modules.one_stud_support import checkMark,checkIndex
 
-
-def mult_gpa_grade(stud_marks,cr_hour):
-	num_sub = len(max(stud_marks))
-	
-	gpa_list = []
-	grade_list = []
-	
-	for each in stud_marks:
-		if len(each) < num_sub:
-			for _ in range(num_sub - len(each)):
-				each.append(0)
-			
-		temp_grade = [gradeFun(value) for value in each]
-		temp_gpa = [gpa(value,cr_hour) for value in each]
-	
-		
-		grade_list.append(temp_grade)
-		gpa_list.append(temp_gpa)
-	
-	return grade_list,gpa_list
 	
 
 	
-def list_grade_gpa(stud_data,cr_hour):
-	stud_names,stud_marks = [],[]
+def list_grade_gpa(input_data,cr_hour):
 	
-	for key,value in stud_data.items():
-		stud_names.append(key)
-		
-		stud_marks.append(value)
+	stud_data,stud_names,stud_marks = list_item_extract(input_data)
 	
-	grade_list,gpa_list = mult_gpa_grade(stud_marks,cr_hour)
+	grade_list,gpa_list = mult_gpa_grade(stud_marks,cr_hour,checkMark,checkIndex,gradeFun,gpa)
 	
 	for index,name in enumerate(stud_names):
 		stud_data[name] = {
@@ -44,15 +24,10 @@ def list_grade_gpa(stud_data,cr_hour):
 	return stud_data
 
 	
-def list_gpa(stud_data,cr_hour):
-	stud_names,stud_marks = [],[]
+def list_gpa(input_data,cr_hour):
+	stud_data,stud_names,stud_marks = list_item_extract(input_data)
 	
-	for key,value in stud_data.items():
-		stud_names.append(key)
-		
-		stud_marks.append(value)
-	
-	gpa_list = mult_gpa_grade(stud_marks,cr_hour)[1]
+	gpa_list = mult_gpa_grade(stud_marks,cr_hour,checkMark,checkIndex,gradeFun,gpa)[1]
 	
 	for index,name in enumerate(stud_names):
 		stud_data[name] = {
@@ -63,13 +38,9 @@ def list_gpa(stud_data,cr_hour):
 	return stud_data
 
 
-def list_grade(stud_data):
-	stud_names,stud_marks = [],[]
+def list_grade(input_data):
 	
-	for key,value in stud_data.items():
-		stud_names.append(key)
-		
-		stud_marks.append(value)
+	stud_data,stud_names,stud_marks = list_item_extract(input_data)
 	
 	grade_list = [gradeFun(each) for each in stud_marks]
 	
@@ -81,21 +52,16 @@ def list_grade(stud_data):
 	
 	return stud_data
 	
+	
+##################################
+##################################
 
-def dict_gpa_grade(stud_data,cr_hour):
-		
-	stud_names = [key for key in stud_data.keys()]
+def dict_gpa_grade(input_dict,cr_hour):
 	
-	stud_marks = []
-	
-	for name in stud_names:
-		stud = stud_data[name]
-			
-		temp = [stud[sub] for sub in stud]
+	stud_data,stud_names,stud_marks = dict_mark_extractor(input_dict)
+
 		
-		stud_marks.append(temp)
-		
-	grade_list,gpa_list = mult_gpa_grade(stud_marks,cr_hour)
+	grade_list,gpa_list = mult_gpa_grade(stud_marks,cr_hour,checkMark,checkIndex,gradeFun,gpa)
 	
 	for i,stud in enumerate(stud_names):
 
@@ -110,18 +76,9 @@ def dict_gpa_grade(stud_data,cr_hour):
 	return stud_data
 
 
-def dict_grade(stud_data):
+def dict_grade(input_dict):
 		
-	stud_names = [key for key in stud_data.keys()]
-	
-	stud_marks = []
-	
-	for name in stud_names:
-		stud = stud_data[name]
-			
-		temp = [stud[sub] for sub in stud]
-		
-		stud_marks.append(temp)
+	stud_data,stud_names,stud_marks = dict_mark_extractor(input_dict)
 		
 	grade_list = [gradeFun(each) for each in stud_marks]
 	
@@ -137,20 +94,11 @@ def dict_grade(stud_data):
 	return stud_data
 		
 		
-def dict_gpa(stud_data,cr_hour):
+def dict_gpa(input_data,cr_hour):
 		
-	stud_names = [key for key in stud_data.keys()]
-	
-	stud_marks = []
-	
-	for name in stud_names:
-		stud = stud_data[name]
-			
-		temp = [stud[sub] for sub in stud]
+	stud_data,stud_names,stud_marks = dict_mark_extractor(input_data)
 		
-		stud_marks.append(temp)
-		
-	gpa_list = mult_gpa_grade(stud_marks,cr_hour)[1]
+	gpa_list = mult_gpa_grade(stud_marks,cr_hour,checkMark,checkIndex,gradeFun,gpa)[1]
 	
 	for i,stud in enumerate(stud_names):
 		
@@ -158,12 +106,21 @@ def dict_gpa(stud_data,cr_hour):
 		
 	return stud_data
 
-def average_mult(stud_data):
+
+##################################
+##################################
+
+def average_mult(input_dict):
+	
+	stud_data = input_dict.copy()
+	
 	stud_name = [key for key in stud_data]
 	
 	stud_mark = [value for value in stud_data.values()]
 	
-	average = [sum(each)/len(each) for each in stud_mark]
+	num_sub = len(max(stud_mark))
+	
+	average = [sum(each)/num_sub for each in stud_mark]
 	
 	for i,name in enumerate(stud_name):
 		stud_data[name] = {
@@ -172,6 +129,7 @@ def average_mult(stud_data):
 		}
 		
 	return stud_data
+
 	
 def ranker(stud_data):
 	

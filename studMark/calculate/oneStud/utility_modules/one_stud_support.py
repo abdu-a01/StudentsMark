@@ -32,3 +32,8 @@ def checkIndex(arg1,arg2):
 		
 	elif len(arg1) != len(arg2):
 		raise NotEqualIndexError("number of mark and their credit hour should be the same")
+	
+	elif not all(map(lambda x:type(x) == int and x > 0,arg2)):
+		raise ValueError("credit hour should be number only")
+	
+	
