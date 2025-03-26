@@ -77,6 +77,8 @@ def studMarks(data):
 def subList(data):
 	return extractor(data)[1]
 	
+
+	
 def max_min(data):
 	sub_marks = {sub:[data[stud][sub] for stud in studNames(data)] for sub in subList(data)}
 	
@@ -89,16 +91,3 @@ def max_min(data):
 	return {max_sub:mean_mark[max_sub]},{min_sub:mean_mark[min_sub]}
 	
 
-def fileChecker(input_data):
-	if type(input_data) == dict:
-		return input_data.copy()
-	if "." in input_data:
-		sep = input_data.split(".")
-		if sep[-1] not in ["json"]:
-			raise ValueError("the function receivs only dictionary or json file")
-		json = __import__("json")
-		with open(input_data) as file:
-			return json.load(file)
-		
-	raise ValueError("the function receivs only dictionary or json file")
-		

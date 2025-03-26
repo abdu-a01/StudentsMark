@@ -1,3 +1,4 @@
+from .oneStud.utility_modules.mult_stud_support import checkFile
 from .oneStud.for_one_sub import (
 	gradeFun,
 	gpaFun,
@@ -5,8 +6,7 @@ from .oneStud.for_one_sub import (
 	studNames,
 	studMarks,
 	subList,
-	max_min,
-	fileChecker
+	max_min
 )
 
 
@@ -14,7 +14,7 @@ from .oneStud.for_one_sub import (
 class StudMark:
 	
 	def __init__(self,file):
-		self.studData = fileChecker(file)
+		self.studData = checkFile(file)
 		self.students = studNames(self.studData)
 		self.subjects = subList(self.studData)
 		self.all_mark = studMarks(self.studData)
