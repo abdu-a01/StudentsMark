@@ -1,6 +1,6 @@
 from pathlib import Path
 
-def is_valid_dict(file):
+def validate(file):
 	
 	keys = file.keys()
 	
@@ -24,7 +24,7 @@ def is_valid_dict(file):
 
 def checkFile(input_data): 
 	if type(input_data) == dict:
-		return is_valid_dict(input_data)
+		return validate(input_data)
 		
 	file = Path(input_data)
 	if not file.is_file():
@@ -37,5 +37,5 @@ def checkFile(input_data):
 	with open(input_data) as file:
 		data = json.load(file)
 		
-	return is_valid_dict(data)
+	return validate(data)
 

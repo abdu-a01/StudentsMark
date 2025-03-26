@@ -1,5 +1,5 @@
-from .oneStud.utility_modules.mult_stud_support import checkFile
-from .oneStud.for_one_sub import (
+from .oneStud.utility.file_checker import checkFile
+from .oneStud.grading import (
 	gradeFun,
 	gpaFun,
 	pointFun,

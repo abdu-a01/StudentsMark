@@ -1,4 +1,4 @@
-from .utility_modules.one_stud_support import checkMark,checkIndex
+from .utility.validator import checkMark,checkIndex
 
 def giveGrade(result:float) -> tuple:
 	result = checkMark(result)
@@ -58,6 +58,19 @@ def gpaFun(marks:list,crs:list) -> float:
 	Gpa = sum(pMarks)/sum(crs)
 	
 	return round(Gpa,2)
+	
+def gpa(*args):
+	for each in args:
+		if type(each) != tuple:
+			raise TypeError("Invalid argument")
+		if len(each) != 2:
+			raise ValueError("each value must have both mark and credit hours")
+	marks = [each[0] for each in args]
+	cr_hours = [each[1] for each in args]
+	
+	return gpaFun(marks,cr_hours)
+
+
 	
 def extractor(data):
 	names = list(data.keys())
