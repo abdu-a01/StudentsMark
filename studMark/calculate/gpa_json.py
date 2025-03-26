@@ -1,141 +1,162 @@
-from .oneStud.for_one_sub import gradeFun,gpa
-from .oneStud.utility_modules.mult_stud_support import (
-	list_item_extract,dict_mark_extractor,mult_gpa_grade
+from .oneStud.for_one_sub import (
+	gradeFun,
+	gpaFun,
+	pointFun,
+	studNames,
+	studMarks,
+	subList,
+	max_min,
+	fileChecker
 )
-from .oneStud.utility_modules.one_stud_support import checkMark,checkIndex
-
-	
-
-	
-def list_grade_gpa(input_data,cr_hour):
-	
-	stud_data,stud_names,stud_marks = list_item_extract(input_data)
-	
-	grade_list,gpa_list = mult_gpa_grade(stud_marks,cr_hour,checkMark,checkIndex,gradeFun,gpa)
-	
-	for index,name in enumerate(stud_names):
-		stud_data[name] = {
-			"marks":stud_marks[index],
-			"grade":grade_list[index],
-			"gpa":gpa_list[index]
-		}
-	
-	return stud_data
-
-	
-def list_gpa(input_data,cr_hour):
-	stud_data,stud_names,stud_marks = list_item_extract(input_data)
-	
-	gpa_list = mult_gpa_grade(stud_marks,cr_hour,checkMark,checkIndex,gradeFun,gpa)[1]
-	
-	for index,name in enumerate(stud_names):
-		stud_data[name] = {
-			"marks":stud_marks[index],
-			"gpa":gpa_list[index]
-		}
-	
-	return stud_data
 
 
-def list_grade(input_data):
-	
-	stud_data,stud_names,stud_marks = list_item_extract(input_data)
-	
-	grade_list = [gradeFun(each) for each in stud_marks]
-	
-	for index,name in enumerate(stud_names):
-		stud_data[name] = {
-			"marks":stud_marks[index],
-			"grade":grade_list[index]
-		}
-	
-	return stud_data
-	
-	
-##################################
-##################################
 
-def dict_gpa_grade(input_dict,cr_hour):
+class StudMark:
 	
-	stud_data,stud_names,stud_marks = dict_mark_extractor(input_dict)
-
-		
-	grade_list,gpa_list = mult_gpa_grade(stud_marks,cr_hour,checkMark,checkIndex,gradeFun,gpa)
-	
-	for i,stud in enumerate(stud_names):
-
-		for j,sub in enumerate(stud_data[stud]):
-			stud_data[stud][sub] = {
-				"mark": stud_marks[i][j],
-				"grade": grade_list[i][j]
-			}
-		
-		stud_data[stud]["gpa"] = gpa_list[i]
-		
-	return stud_data
-
-
-def dict_grade(input_dict):
-		
-	stud_data,stud_names,stud_marks = dict_mark_extractor(input_dict)
-		
-	grade_list = [gradeFun(each) for each in stud_marks]
-	
-	for i,stud in enumerate(stud_names):
-
-		for j,sub in enumerate(stud_data[stud]):
-			stud_data[stud][sub] = {
-				"mark": stud_marks[i][j],
-				"grade": grade_list[i][j]
-			}
+	def __init__(self,file):
+		self.studData = fileChecker(file)
+		self.students = studNames(self.studData)
+		self.subjects = subList(self.studData)
+		self.all_mark = studMarks(self.studData)
+		self.total = len(self.students)
+		self.max_sub,self.min_sub = max_min(self.studData)
 		
 		
-	return stud_data
+	def sort(self,gpa=False):
+		data = self.studData.copy()
+		
+		keys = list(self.studData.keys())
+		first = keys[0]
+		
+		if "gpa" in data[first] and gpa:
+			data = {key:data[key] for key in sorted(data,key=lambda y: data[y]["gpa"],reverse=True)}
+			
+			return data
+		
+		data = {key:data[key] for key in sorted(data)}
+		
+		return data
 		
 		
-def dict_gpa(input_data,cr_hour):
+	def sort_update(self,gpa=False):
 		
-	stud_data,stud_names,stud_marks = dict_mark_extractor(input_data)
+		self.studData = self.sort(gpa=gpa).copy()
 		
-	gpa_list = mult_gpa_grade(stud_marks,cr_hour,checkMark,checkIndex,gradeFun,gpa)[1]
-	
-	for i,stud in enumerate(stud_names):
 		
-		stud_data[stud]["gpa"] = gpa_list[i]
+	
+	def grade(self):
+		data = self.studData.copy()
 		
-	return stud_data
-
-
-##################################
-##################################
-
-def average_mult(input_dict):
-	
-	stud_data = input_dict.copy()
-	
-	stud_name = [key for key in stud_data]
-	
-	stud_mark = [value for value in stud_data.values()]
-	
-	num_sub = len(max(stud_mark))
-	
-	average = [sum(each)/num_sub for each in stud_mark]
-	
-	for i,name in enumerate(stud_name):
-		stud_data[name] = {
-			"Marks":stud_mark[i],
-			"Average":average[i]
-		}
+		subject = self.subjects.copy()
 		
-	return stud_data
-
+		for each in data:
+			stud = data[each]
+			for sub in subject:
+				if "mark" not in stud[sub]:
+					mark = stud[sub]
+					grade_sub = gradeFun(mark)
+				
+					data[each][sub] = {
+						"mark":mark,
+						"grade":grade_sub
+					}
+					continue
+				mark = stud[sub]["mark"]
+				data[each][sub]["grade"] = gradeFun(mark)
+		
+		return data
 	
-def ranker(stud_data):
+	def grade_update(self):
+		
+		self.studData = self.grade().copy()
+		
+		
+		
+	def point(self):
+		data = self.studData.copy()
+		
+		subject = self.subjects.copy()
+		
+		for each in data:
+			stud = data[each]
+			for sub in subject:
+				if "mark" not in stud[sub]:
+					mark = stud[sub]
+					point_sub = pointFun(mark)
+				
+					data[each][sub] = {
+						"mark":mark,
+						"point":point_sub
+					}
+					continue
+				mark = stud[sub]["mark"]
+				data[each][sub]["point"] = pointFun(mark)
+		
+		return data
 	
-	ranked = sorted(stud_data,key=lambda key:stud_data[key],reverse=True)
-
 	
-	final = {rank:{key:stud_data[key]} for rank,key in enumerate(ranked,1)}
+	def point_update(self):
+		
+		self.studData = self.point().copy()
+		
+		
+		
+	def gpa(self,cr_hours):
+		data = self.studData.copy()
+		marks = self.all_mark
+		
+		gpa_list = [gpaFun(each,cr_hours) for each in marks]
+		
+		for i,each in enumerate(self.students):
+			data[each]["gpa"] = gpa_list[i]
+		
+		return data
 	
-	return final
-
+	def gpa_update(self,cr_hours):
+		self.studData = self.gpa(cr_hours).copy()
+		
+		
+	def average(self):
+		data = self.studData.copy()
+		num_sub = len(self.subjects)
+		mark_list = self.all_mark
+		
+		aver = [sum(marks)/num_sub for marks in mark_list]
+		for i,each in enumerate(self.students):
+			data[each]["average"] = aver[i]
+		
+		return data
+		
+	def average_update(self):
+		self.studData = self.average().copy()
+		
+	def ranker(self,gpa=False):
+		data = self.studData.copy()
+		students = list(data.keys())
+		
+		if gpa and "gpa" in data[students[0]]:
+			sorted_data = self.sort(gpa)
+			
+			stud_names = list(sorted_data.keys())
+			
+			rank = [(i,each) for i,each in enumerate(stud_names,1)]
+			
+		else:
+			self.average_update()
+			
+			rank = [(i,each) for i,each in enumerate(sorted(data,key=lambda y:data[y]["average"],reverse=True),1)]
+			
+			self.studData = data.copy()
+			
+		
+		for i,each in enumerate(rank):
+			
+			data[each]["rank"] = rank[i]
+		
+		return data
+		
+	def ranker_update(self,gpa=False):
+		self.studData = self.ranker(gpa).copy()
+			
+	
+	

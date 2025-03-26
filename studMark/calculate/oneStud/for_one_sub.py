@@ -51,10 +51,54 @@ def pointFun(mark:float) -> float:
 	return giveGrade(mark)[1]	
 
 
-def gpa(marks:list,crs:list) -> float:
+def gpaFun(marks:list,crs:list) -> float:
 	checkIndex(marks,crs)
 	pMarks = [pointFun(marks[_])*crs[_] for _ in range(len(marks))]
 	
 	Gpa = sum(pMarks)/sum(crs)
 	
 	return round(Gpa,2)
+	
+def extractor(data):
+	names = list(data.keys())
+	subjects = list(data[names[0]].keys())
+	
+	marks = [[data[stud][sub] for sub in subjects] for stud in names]
+	
+	return names,subjects,marks
+	
+	
+def studNames(data):
+	return extractor(data)[0]
+	
+def studMarks(data):
+	return extractor(data)[2]
+	
+def subList(data):
+	return extractor(data)[1]
+	
+def max_min(data):
+	sub_marks = {sub:[data[stud][sub] for stud in studNames(data)] for sub in subList(data)}
+	
+	mean_mark = {sub:sum(sub_marks[sub])/len(sub_marks[sub]) for sub in sub_marks}
+	
+	max_sub = max(mean_mark,key=lambda x:mean_mark[x])
+	
+	min_sub = min(mean_mark,key=lambda x:mean_mark[x])
+	
+	return {max_sub:mean_mark[max_sub]},{min_sub:mean_mark[min_sub]}
+	
+
+def fileChecker(input_data):
+	if type(input_data) == dict:
+		return input_data.copy()
+	if "." in input_data:
+		sep = input_data.split(".")
+		if sep[-1] not in ["json"]:
+			raise ValueError("the function receivs only dictionary or json file")
+		json = __import__("json")
+		with open(input_data) as file:
+			return json.load(file)
+		
+	raise ValueError("the function receivs only dictionary or json file")
+		
