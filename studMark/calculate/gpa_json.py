@@ -10,7 +10,6 @@ from .oneStud.for_one_sub import (
 )
 
 
-
 class StudMark:
 	
 	def __init__(self,file):
@@ -159,4 +158,141 @@ class StudMark:
 		self.studData = self.ranker(gpa).copy()
 			
 	
+	def id_giver(self,pre="",suf="",sep="/",length=4):
+		data = self.sort()
+		sep = sep if sep in ["-","\\",":"] else "/"
+		form = lambda txt:f"{pre}{sep}{txt:}{sep}{suf}"
+		
+		IDs = [form(f"{i:0{length}d}") for i in range(1,len(data)+1)]
+		
+		for i,each in enumerate(data):
+			data[each]["id_number"] = IDs[i]
+		
+		self.studData = data.copy()
+	
+	
+	def one_sub(self,subject):
+		data = self.studData.copy()
+		marks = [data[name][subject] for name in data]
+		
+		class Subject:
+			
+			def max_mark(self, target=""):
+				maximum = max(marks)
+				result = {}
+				for each in data:
+					value = data[each][subject]
+					if value == maximum:
+						result[each] = value
+				
+				if target.lower().strip() == "sub":
+					return maximum
+				elif target.lower().strip() == "stud":
+					studs = list(result.keys())
+					return studs
+				
+				return result
+				
+				
+			def min_mark(self, target=""):
+				minimum = min(marks)
+				result = {}
+				for each in data:
+					value = data[each][subject]
+					if value == minimum:
+						result[each] = value
+				
+				if target.lower().strip() == "Mark":
+					return minimum
+				elif target.lower().strip() == "stud":
+					studs = list(result.keys())
+					return studs
+				
+				return result
+			
+			def average(self):
+				return sum(marks)/len(marks)
+				
+			def full_mark(self):
+				result = {name:data[name][subject] for name in data}
+				return result
+				
+		return Subject()
+		
+		
+	def one_stud(self,name):
+		data = self.studData.copy()
+		stud_data = {name:data[name]}
+		subjects = self.subjects.copy()
+		
+		class Student:
+			
+			def __init__(self):
+				self.info = stud_data.copy()
+				self.marks = [stud_data[name][sub] for sub in stud_data[name]]
+			
+			def max_mark(self,target=""):
+				maximum = max(self.marks)
+				result = {}
+				for each in stud_data[name]:
+					value = data[name][each]
+					if value == maximum:
+						result[each] = value
+				target = target.lower().strip()
+				if target == "mark":
+					return maximum
+				elif target == "sub":
+					return list(result.keys())
+				return result
+				
+				
+			def min_mark(self,target=""):
+				minimum = min(self.marks)
+				result = {}
+				for each in stud_data[name]:
+					value = data[name][each]
+					if value == minimum:
+						result[each] = value
+				target = target.lower().strip()
+				if target == "mark":
+					return minimum
+				elif target == "sub":
+					return list(result.keys())
+				return result
+			
+			def average(self):
+				return sum(self.marks)/len(self.marks)
+			
+			def grade(self,sub="all"):
+				
+				if sub in subjects:
+					Mark = stud_data[name][sub]
+					return gradeFun(Mark)
+				
+				grades = [gradeFun(each) for each in self.marks]
+				
+				return grades
+			
+			def point(self,sub="all"):
+				
+				if sub in subjects:
+					Mark = stud_data[name][sub]
+					return pointFun(Mark)
+				
+				point = [pointFun(each) for each in self.marks]
+				
+				return point
+				
+			def gpa(self,cr_hours):
+				return gpaFun(self.marks,cr_hours)
+			
+		return Student()
+		
+	def json(self):
+		json = __import__("json")
+		with open("student_data.json","w") as file:
+			json.dump(self.studData,file,indent=4)
+		
+		print("student data has been saved")
+		
 	
