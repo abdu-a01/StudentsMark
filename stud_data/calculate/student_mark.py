@@ -1,4 +1,6 @@
-from .oneStud.utility.file_checker import checkFile
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter as gcl
+from .oneStud.utility.file_checker import checkFile,dict_xlsx
 from .oneStud.grading import (
 	gradeFun,
 	gpaFun,
@@ -295,4 +297,42 @@ class StudMark:
 		
 		print("student data has been saved")
 		
+	def xlsx(self):
+		data = self.studData
+		rows = dict_xlsx(self.studData,self.students,self.subjects)
+		wb = Workbook()
+
+		ws = wb.active
+		ws.title = "Student_data"
+		
+		for each in rows:
 	
+			ws.append(each)
+		in_1 = self.students[0]
+		
+		subs = self.subjects
+		
+		mg_strt = 2
+		for each in data[in_1]:
+			each = data[in_1][each]
+			if type(each) == dict:
+				col_mv = len(each) - 1
+				mg_end = mg_strt + len(each) - 1
+				mv_strt = mg_strt + 1
+				mv_end = mg_strt + len(subs) - 1
+				ch1 = f"{gcl(mg_strt)}1"
+				ch2 = f"{gcl(mg_end)}1"
+				ch3 = f"{gcl(mv_strt)}1"
+				ch4 = f"{gcl(mv_end)}1"
+									
+				ws.move_range(f"{ch3}:{ch4}",cols=col_mv)
+				ws.merge_cells(f"{ch1}:{ch2}")
+									
+				mg_strt += len(each)
+				
+			
+		
+		wb.save("student_info.xlsx")
+		
+			
+		
