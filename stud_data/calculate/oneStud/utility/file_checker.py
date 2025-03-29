@@ -1,8 +1,26 @@
+"""This module provides functions for validating input types and extracting data from EXEL and json files.
+The module have the following functions:
+	-formal
+	-validate
+	-checkFile
+	-extractor
+	-dict_xlsx
+"""
+
+
 from pathlib import Path
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter as gcl
 
+
+
 def formal(data):
+	"""This function recives student data with dictionary form and then returns dictionary which has students with the same subjects
+	if a student doesn't has a subject:
+		give the subject as key with value 0
+	else:
+		it keeps the previous state
+	"""
 	all_sub = set()
 	
 	for each in data:
@@ -23,13 +41,19 @@ def formal(data):
 			
 
 def validate(file):
+	"""this function recives dictionary and check if it has proper marks and subjects or not 
+	if it has:
+		call formal function
+	ekse:
+		raise ValueError
+	"""
 	
 	keys = file.keys()
 	
 	for key in keys:
 		needed = file[key]
 		if type(needed) != dict:
-			raise ValueError("each student mark should have subjects")
+			raise ValueError("each student mark should have subjects and marks")
 			
 	for key_up in keys:
 		needed = file[key_up]
@@ -44,7 +68,18 @@ def validate(file):
 	return formal(file)
 
 
-def checkFile(input_data): 
+def checkFile(input_data):
+	"""This function recives data and check the type of the data.
+	if it is dictionary:
+		call validate function 
+	if it is json file :
+		dump it to dict then call validate function 
+	if it is xlsx file:
+		call extractor function 
+		then call validate function
+	else:
+		raise ValueError
+	"""
 	if type(input_data) == dict:
 		return validate(input_data)
 		
@@ -68,9 +103,13 @@ def checkFile(input_data):
 
 	
 def extractor(file):
+	"""This function recives xlsx file and extact the data in to dictionary:
+		return dict
+	"""
 	wb = load_workbook(file)
 	
 	ws = wb.active
+	ws.title = "Students"
 	
 	names = []
 	row = 2
@@ -111,7 +150,13 @@ def extractor(file):
 	return data
 
 
-def dict_xlsx(data,names,subject):	
+def dict_xlsx(data,names,subject):
+	"""This function recives:
+		- data - dictionary with students data
+		- names - list of students name
+		- subject - list of subjects
+	return list of data for each xlsx rows
+	"""	
 
 	first = ["Name"] + subject
 	

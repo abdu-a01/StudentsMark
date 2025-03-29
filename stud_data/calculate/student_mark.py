@@ -15,18 +15,46 @@ from .oneStud.grading import (
 class StudMark:
 	
 	def __init__(self,file):
-		self.studData = checkFile(file)
-		self.students = studNames(self.studData)
-		self.subjects = subList(self.studData)
-		self.all_mark = studMarks(self.studData)
-		self.total = len(self.students)
-		self.max_sub,self.min_sub = max_min(self.studData)
+		self._studData = checkFile(file)
+		self._students = studNames(self._studData)
+		self._subjects = subList(self._studData)
+		self._all_mark = studMarks(self._studData)
+		self._total = len(self._students)
+		self._max_sub,self._min_sub = max_min(self._studData)
+		
+	@property
+	def studData(self):
+		return self._studData
+		
+	@property
+	def students(self):
+		return self._students
+	
+	@property
+	def subjects(self):
+		return self._subjects
+		
+	@property
+	def all_mark(self):
+		return self._all_mark
+	
+	@property
+	def total(self):
+		return self._total
+	
+	@property
+	def max_sub(self):
+		return self._max_sub
+		
+	@property
+	def min_sub(self):
+		return self._min_sub
 		
 		
 	def sort(self,gpa=False):
-		data = self.studData.copy()
+		data = self._studData.copy()
 		
-		keys = list(self.studData.keys())
+		keys = list(self._studData.keys())
 		first = keys[0]
 		
 		if "gpa" in data[first] and gpa:
@@ -41,14 +69,14 @@ class StudMark:
 		
 	def sort_update(self,gpa=False):
 		
-		self.studData = self.sort(gpa=gpa).copy()
+		self._studData = self.sort(gpa=gpa).copy()
 		
 		
 	
 	def grade(self):
-		data = self.studData.copy()
+		data = self._studData.copy()
 		
-		subject = self.subjects.copy()
+		subject = self._subjects.copy()
 		
 		for each in data:
 			stud = data[each]
@@ -69,14 +97,14 @@ class StudMark:
 	
 	def grade_update(self):
 		
-		self.studData = self.grade().copy()
+		self._studData = self.grade().copy()
 		
 		
 		
 	def point(self):
-		data = self.studData.copy()
+		data = self._studData.copy()
 		
-		subject = self.subjects.copy()
+		subject = self._subjects.copy()
 		
 		for each in data:
 			stud = data[each]
@@ -98,41 +126,41 @@ class StudMark:
 	
 	def point_update(self):
 		
-		self.studData = self.point().copy()
+		self._studData = self.point().copy()
 		
 		
 		
 	def gpa(self,cr_hours):
-		data = self.studData.copy()
-		marks = self.all_mark
+		data = self._studData.copy()
+		marks = self._all_mark
 		
 		gpa_list = [gpaFun(each,cr_hours) for each in marks]
 		
-		for i,each in enumerate(self.students):
+		for i,each in enumerate(self._students):
 			data[each]["gpa"] = gpa_list[i]
 		
 		return data
 	
 	def gpa_update(self,cr_hours):
-		self.studData = self.gpa(cr_hours).copy()
+		self._studData = self.gpa(cr_hours).copy()
 		
 		
 	def average(self):
-		data = self.studData.copy()
-		num_sub = len(self.subjects)
-		mark_list = self.all_mark
+		data = self._studData.copy()
+		num_sub = len(self._subjects)
+		mark_list = self._all_mark
 		
 		aver = [sum(marks)/num_sub for marks in mark_list]
-		for i,each in enumerate(self.students):
+		for i,each in enumerate(self._students):
 			data[each]["average"] = aver[i]
 		
 		return data
 		
 	def average_update(self):
-		self.studData = self.average().copy()
+		self._studData = self.average().copy()
 		
 	def ranker(self,gpa=False):
-		data = self.studData.copy()
+		data = self._studData.copy()
 		students = list(data.keys())
 		
 		if gpa and "gpa" in data[students[0]]:
@@ -147,7 +175,7 @@ class StudMark:
 			
 			rank = [(i,each) for i,each in enumerate(sorted(data,key=lambda y:data[y]["average"],reverse=True),1)]
 			
-			self.studData = data.copy()
+			self._studData = data.copy()
 			
 		
 		for i,each in enumerate(rank):
@@ -157,7 +185,7 @@ class StudMark:
 		return data
 		
 	def ranker_update(self,gpa=False):
-		self.studData = self.ranker(gpa).copy()
+		self._studData = self.ranker(gpa).copy()
 			
 	
 	def id_giver(self,pre="",suf="",sep="/",length=4):
@@ -170,11 +198,11 @@ class StudMark:
 		for i,each in enumerate(data):
 			data[each]["id_number"] = IDs[i]
 		
-		self.studData = data.copy()
+		self._studData = data.copy()
 	
 	
 	def one_sub(self,subject):
-		data = self.studData.copy()
+		data = self._studData.copy()
 		marks = [data[name][subject] for name in data]
 		
 		class Subject:
@@ -223,9 +251,9 @@ class StudMark:
 		
 		
 	def one_stud(self,name):
-		data = self.studData.copy()
+		data = self._studData.copy()
 		stud_data = {name:data[name]}
-		subjects = self.subjects.copy()
+		subjects = self._subjects.copy()
 		
 		class Student:
 			
@@ -293,13 +321,13 @@ class StudMark:
 	def json(self):
 		json = __import__("json")
 		with open("student_data.json","w") as file:
-			json.dump(self.studData,file,indent=4)
+			json.dump(self._studData,file,indent=4)
 		
 		print("student data has been saved")
 		
 	def xlsx(self):
-		data = self.studData
-		rows = dict_xlsx(self.studData,self.students,self.subjects)
+		data = self._studData
+		rows = dict_xlsx(self._studData,self._students,self._subjects)
 		wb = Workbook()
 
 		ws = wb.active
@@ -308,9 +336,9 @@ class StudMark:
 		for each in rows:
 	
 			ws.append(each)
-		in_1 = self.students[0]
+		in_1 = self._students[0]
 		
-		subs = self.subjects
+		subs = self._subjects
 		
 		mg_strt = 2
 		for each in data[in_1]:

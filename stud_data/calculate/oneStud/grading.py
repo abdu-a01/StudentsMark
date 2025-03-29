@@ -40,15 +40,10 @@ def giveGrade(result:float) -> tuple:
 		point = 0.0
 	return grade, point
 	
+	
+gradeFun = lambda mark: giveGrade(mark)[0]
 
-
-def gradeFun(mark:float) -> str:
-	return giveGrade(mark)[0]
-
-
-
-def pointFun(mark:float) -> float:
-	return giveGrade(mark)[1]	
+pointFun = lambda mark: giveGrade(mark)[1]
 
 
 def gpaFun(marks:list,crs:list) -> float:
@@ -80,16 +75,13 @@ def extractor(data):
 	
 	return names,subjects,marks
 	
+
 	
-def studNames(data):
-	return extractor(data)[0]
-	
-def studMarks(data):
-	return extractor(data)[2]
-	
-def subList(data):
-	return extractor(data)[1]
-	
+studNames = lambda data: extractor(data)[0]
+
+studMarks = lambda data: extractor(data)[2]
+
+subList = lambda data: extractor(data)[1]	
 
 	
 def max_min(data):
