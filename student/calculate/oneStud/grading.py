@@ -1,6 +1,21 @@
+"""This module provides functions that are used to calculate grade, point,gpa and to extract students name, subjects, and marks.
+it has the following functions:
+	-giveGrade
+	-gpaFun
+	-gpa
+	-extractor
+	-max_min
+"""
+
+
 from .utility.validator import checkMark,checkIndex
 
 def giveGrade(result:float) -> tuple:
+	"""This function used to calculate grade and point using result as an input
+	- first check if an argument is valid or not
+	- then checks its grade and point 
+	then returns tuple with grade and point 
+	"""
 	result = checkMark(result)
 	if result >= 90:
 		grade = "A+"
@@ -40,19 +55,42 @@ def giveGrade(result:float) -> tuple:
 		point = 0.0
 	return grade, point
 	
-	
-gradeFun = lambda mark: giveGrade(mark)[0]
 
-pointFun = lambda mark: giveGrade(mark)[1]
+def gradeFun(mark):
+	"""used to calculate grade for one subject mark
+	recives: mark - non negative float number 
+	return : the first element that returned from giveGrade
+	"""
+	return giveGrade(mark)[0]
+
+def pointFun(mark):
+	"""used to calculate point for one subject mark
+	recives: mark - non negative float number 
+	return : the second element that returned from giveGrade
+	"""
+	return giveGrade(mark)[1]
 
 
 def gpaFun(marks:list,crs:list) -> float:
+	"""This function calculate gpa from given marks and crs
+	first check if marks and crs is valid or not
+	then calculate Gpa 
+	"""
 	checkIndex(marks,crs)
 	pMarks = [pointFun(marks[_])*crs[_] for _ in range(len(marks))]
 	
 	Gpa = sum(pMarks)/sum(crs)
 	
 	return round(Gpa,2)
+	
+def average(*args):
+	"""used to calculate average:
+	recive: args - marks each mark is float
+	return: sum of marks devided by number of args
+	"""
+	for each in args:
+		checkMark(each)
+	return sum(args)/len(args)
 	
 def gpa(*args):
 	for each in args:
@@ -68,6 +106,13 @@ def gpa(*args):
 
 	
 def extractor(data):
+	"""This function recives dictionary of students data,
+	return (
+		students name,
+		subjects and 
+		marks 
+	)
+	"""
 	names = list(data.keys())
 	subjects = list(data[names[0]].keys())
 	
@@ -85,6 +130,9 @@ subList = lambda data: extractor(data)[1]
 
 	
 def max_min(data):
+	"""This function recives dictionary of students data then
+	returns max mark and min mark subjects.
+	"""
 	sub_marks = {sub:[data[stud][sub] for stud in studNames(data)] for sub in subList(data)}
 	
 	mean_mark = {sub:sum(sub_marks[sub])/len(sub_marks[sub]) for sub in sub_marks}
