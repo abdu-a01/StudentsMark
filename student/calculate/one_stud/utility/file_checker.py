@@ -124,7 +124,7 @@ def extractor(file):
 
     marks = []
     for _ in range(2, len(names) + 2):
-        mark = [work_sheet[f"{gcl(col)}1"].value for _ in range(2, len(subs) + 2)]
+        mark = [float(work_sheet[f"{gcl(col)}1"].value) for _ in range(2, len(subs) + 2)]
 
         marks.append(mark)
 
