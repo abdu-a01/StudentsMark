@@ -1,1 +1,5 @@
 __pycache__
+student_data.json
+student_info.xlsx
+.pytest_cache
+.mypy_cache
