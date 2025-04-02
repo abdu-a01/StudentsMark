@@ -10,6 +10,10 @@ description = "A students mark information retrieving and calculation package."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
 dependencies = [
     "openpyxl>=3.1.5",
 ]
