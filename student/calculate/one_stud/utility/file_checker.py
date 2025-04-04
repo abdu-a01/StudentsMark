@@ -123,8 +123,8 @@ def extractor(file):
         col += 1
 
     marks = []
-    for _ in range(2, len(names) + 2):
-        mark = [float(work_sheet[f"{gcl(col)}1"].value) for _ in range(2, len(subs) + 2)]
+    for i in range(2, len(names) + 2):
+        mark = [float(work_sheet[f"{gcl(col)}{i}"].value) for col in range(2, len(subs) + 2)]
 
         marks.append(mark)
 
@@ -168,3 +168,37 @@ def dict_xlsx(data, names, subject):
         all_stud.append(elem)
 
     return all_stud
+    
+def key_extractor(data):
+	"""Function used to extract every key in one dictionary.
+	"""
+	up_key = set()
+	
+	for stud in data:
+		for sub in data[stud]:
+			up_key.add(sub)
+			if isinstance(data[stud][sub],dict):
+				for each in data[stud][sub]:
+					up_key.add(each)
+					
+	return list(up_key)
+
+
+def non_key_deleter(data,keys):
+	"""This function used to delete unnecessary keys from given dictionary.
+	"""
+	for stud in data:
+		subs = list(data[stud].keys())
+		for sub in subs:
+			if isinstance(data[stud][sub],dict):
+				in_key = list(data[stud][sub].keys())
+				for key in in_key:
+					if key in keys:
+						continue
+					del data[stud][sub][key]
+			
+			if sub in keys:
+				continue
+			del data[stud][sub]
+
+

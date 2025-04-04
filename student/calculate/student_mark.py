@@ -5,7 +5,7 @@ has class:
 
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter as gcl
-from .one_stud.utility.file_checker import check_file, dict_xlsx
+from .one_stud.utility.file_checker import check_file, dict_xlsx,key_extractor,non_key_deleter
 from .one_stud.grading import (
     grade_fun,
     gpa_fun,
@@ -104,7 +104,7 @@ class StudMark:
         """
         data = self._stud_data.copy()
 
-        keys = list(self._stud_data.keys())
+        keys = list(data.keys())
         first = keys[0]
 
         if "gpa" in data[first] and gpa:
@@ -118,6 +118,8 @@ class StudMark:
         data = {key: data[key] for key in sorted(data)}
         if update:
             self._stud_data = data.copy()
+            return self._stud_data
+        
 
         return data
 
@@ -127,6 +129,7 @@ class StudMark:
                 default is False
         """
         data = self._stud_data.copy()
+        avl_key = key_extractor(data)
 
         subject = self._subjects.copy()
 
@@ -142,6 +145,9 @@ class StudMark:
                 data[each][sub]["grade"] = grade_fun(mark)
         if update:
             self._stud_data = data.copy()
+            return self._stud_data
+        
+        non_key_deleter(data,avl_key)
 
         return data
 
@@ -151,6 +157,7 @@ class StudMark:
                 default is False
         """
         data = self._stud_data.copy()
+        avl_key = key_extractor(data)
 
         subject = self._subjects.copy()
 
@@ -166,6 +173,9 @@ class StudMark:
                 data[each][sub]["point"] = point_fun(mark)
         if update:
             self._stud_data = data.copy()
+            return self._stud_data
+        
+        non_key_deleter(data,avl_key)
 
         return data
 
@@ -176,6 +186,7 @@ class StudMark:
                 default is False
         """
         data = self._stud_data.copy()
+        avl_key = key_extractor(data)
         marks = self._all_mark
 
         gpa_list = [gpa_fun(each, cr_hours) for each in marks]
@@ -185,6 +196,8 @@ class StudMark:
 
         if update:
             self._stud_data = data.copy()
+            return self._stud_data
+        non_key_deleter(data,avl_key)
 
         return data
 
@@ -195,6 +208,8 @@ class StudMark:
                 default is False
         """
         data = self._stud_data.copy()
+        avl_key = key_extractor(data)
+
         num_sub = len(self._subjects)
         mark_list = self._all_mark
 
@@ -203,6 +218,9 @@ class StudMark:
             data[each]["average"] = aver[i]
         if update:
             self._stud_data = data.copy()
+            return self._stud_data
+            
+        non_key_deleter(data,avl_key)
 
         return data
 
@@ -214,6 +232,8 @@ class StudMark:
                 default is False
         """
         data = self._stud_data.copy()
+        avl_key = key_extractor(data)
+        
         students = self.students
 
         ave_key = "average" in data[students[0]]
@@ -239,12 +259,12 @@ class StudMark:
 
         for i, each in rank:
             data[each]["rank"] = i
-        for each in data:
-            if not ave_key:
-                if "average" in data[each]:
-                    del data[each]["average"]
+
         if update:
             self._stud_data = data.copy()
+            return self._stud_data
+            
+        non_key_deleter(data,avl_key)
 
         return data
 
@@ -289,7 +309,8 @@ class StudMark:
             """
 
             def max_mark(self, target=""):
-                """this method used to get information about the largest mark in the list of all marks.
+                """this method used to get information about the largest
+                mark in the list of all marks.
                 recives:
                         target - string value must be 'sub' or 'stud' default is ''
 
@@ -318,7 +339,8 @@ class StudMark:
                 return result
 
             def min_mark(self, target=""):
-                """this method used to get information about the smallest mark in the list of all marks.
+                """this method used to get information about the smalles
+                 mark in the list of all marks
                 recives:
                         target - string value must be 'sub' or 'stud' default is ''
 
@@ -391,8 +413,16 @@ class StudMark:
                         info - dict with full information about the student
                         marks - list of marks the student have
                 """
-                self.info = stud_data.copy()
-                self.marks = [stud_data[name][sub] for sub in stud_data[name]]
+                self._info = stud_data.copy()
+                self._marks = [stud_data[name][sub] for sub in stud_data[name]]
+            
+            @property
+            def info(self):
+            	return self._info
+            
+            @property
+            def marks(self):
+            	return self._marks
 
             def max_mark(self, target=""):
                 """this method used to get information about the largest mark of the student.
@@ -408,7 +438,7 @@ class StudMark:
                                 return dict of subjects and marks with maximum mark
 
                 """
-                maximum = max(self.marks)
+                maximum = max(self._marks)
                 result = {}
                 for each in stud_data[name]:
                     value = data[name][each]
@@ -435,7 +465,7 @@ class StudMark:
                                 return dict of subjects and marks with minimum mark
 
                 """
-                minimum = min(self.marks)
+                minimum = min(self._marks)
                 result = {}
                 for each in stud_data[name]:
                     value = data[name][each]
@@ -450,7 +480,7 @@ class StudMark:
 
             def average(self):
                 """used to get average mark of the student"""
-                return sum(self.marks) / len(self.marks)
+                return sum(self._marks) / len(self._marks)
 
             def grade(self, sub="all"):
                 """used to get grades of the student:
@@ -464,7 +494,7 @@ class StudMark:
                 if sub in subjects:
                     mark = stud_data[name][sub]
                     return grade_fun(mark)
-                grades = [grade_fun(each) for each in self.marks]
+                grades = [grade_fun(each) for each in self._marks]
 
                 return grades
 
@@ -481,7 +511,7 @@ class StudMark:
                     mark = stud_data[name][sub]
                     return point_fun(mark)
 
-                point = [point_fun(each) for each in self.marks]
+                point = [point_fun(each) for each in self._marks]
 
                 return point
 
@@ -500,7 +530,7 @@ class StudMark:
                         call gpaFun for calculating gpa and return it
                 """
                 try:
-                    return gpa_fun(self.marks, cr_hours)
+                    return gpa_fun(self._marks, cr_hours)
                 except (TypeError, ValueError):
                     if "gpa" in stud_data[name]:
                         return stud_data[name]["gpa"]
