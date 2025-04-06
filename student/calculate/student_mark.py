@@ -3,9 +3,10 @@ has class:
         StudMark
 """
 
+from copy import deepcopy
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter as gcl
-from .one_stud.utility.file_checker import check_file, dict_xlsx,key_extractor,non_key_deleter
+from .one_stud.utility.file_checker import check_file, dict_xlsx
 from .one_stud.grading import (
     grade_fun,
     gpa_fun,
@@ -94,13 +95,11 @@ class StudMark:
         """Used to access private _min_sub from outer scope"""
         return self._min_sub
 
-    def sort(self, gpa=False, update=False):
+    def sort(self, gpa=False):
         """used to sort the students data, according to:
                 - there gpa if gpa is in the dict and gpa parameter is True
                 - else by there name
-        attributes:
-                - update - is bool to know if the user is need to update data or not.
-                default is False
+
         """
         data = self._stud_data.copy()
 
@@ -116,20 +115,17 @@ class StudMark:
             return data
 
         data = {key: data[key] for key in sorted(data)}
-        if update:
-            self._stud_data = data.copy()
-            return self._stud_data
-        
 
-        return data
+        self._stud_data = data.copy()
+
+        return self._stud_data
 
     def grade(self, update=False):
         """Used to give grade for each student and for each subject
         - update - is bool to know if the user is need to update data or not.
                 default is False
         """
-        data = self._stud_data.copy()
-        avl_key = key_extractor(data)
+        data = deepcopy(self._stud_data)
 
         subject = self._subjects.copy()
 
@@ -144,10 +140,10 @@ class StudMark:
                 mark = data[each][sub]["mark"]
                 data[each][sub]["grade"] = grade_fun(mark)
         if update:
-            self._stud_data = data.copy()
-            return self._stud_data
+        	self._stud_data = deepcopy(data)
+        	
+        	return self._stud_data
         
-        non_key_deleter(data,avl_key)
 
         return data
 
@@ -156,8 +152,7 @@ class StudMark:
         - update - is bool to know if the user is need to update data or not.
                 default is False
         """
-        data = self._stud_data.copy()
-        avl_key = key_extractor(data)
+        data = deepcopy(self._stud_data)
 
         subject = self._subjects.copy()
 
@@ -172,10 +167,9 @@ class StudMark:
                 mark = data[each][sub]["mark"]
                 data[each][sub]["point"] = point_fun(mark)
         if update:
-            self._stud_data = data.copy()
+            self._stud_data = deepcopy(data)
             return self._stud_data
-        
-        non_key_deleter(data,avl_key)
+
 
         return data
 
@@ -185,8 +179,8 @@ class StudMark:
         - update - is bool to know if the user is need to update data or not.
                 default is False
         """
-        data = self._stud_data.copy()
-        avl_key = key_extractor(data)
+        data = deepcopy(self._stud_data)
+
         marks = self._all_mark
 
         gpa_list = [gpa_fun(each, cr_hours) for each in marks]
@@ -195,9 +189,8 @@ class StudMark:
             data[each]["gpa"] = gpa_list[i]
 
         if update:
-            self._stud_data = data.copy()
+            self._stud_data = deepcopy(data)
             return self._stud_data
-        non_key_deleter(data,avl_key)
 
         return data
 
@@ -207,8 +200,8 @@ class StudMark:
         - update - is bool to know if the user is need to update data or not.
                 default is False
         """
-        data = self._stud_data.copy()
-        avl_key = key_extractor(data)
+        data = deepcopy(self._stud_data)
+
 
         num_sub = len(self._subjects)
         mark_list = self._all_mark
@@ -217,10 +210,8 @@ class StudMark:
         for i, each in enumerate(self._students):
             data[each]["average"] = aver[i]
         if update:
-            self._stud_data = data.copy()
+            self._stud_data = deepcopy(data)
             return self._stud_data
-            
-        non_key_deleter(data,avl_key)
 
         return data
 
@@ -231,12 +222,12 @@ class StudMark:
         - update - is bool to know if the user is need to update data or not.
                 default is False
         """
-        data = self._stud_data.copy()
-        avl_key = key_extractor(data)
+        data = deepcopy(self._stud_data)
+
         
         students = self.students
 
-        ave_key = "average" in data[students[0]]
+
 
         if gpa and "gpa" in data[students[0]]:
             sorted_data = self.sort(gpa)
@@ -261,10 +252,8 @@ class StudMark:
             data[each]["rank"] = i
 
         if update:
-            self._stud_data = data.copy()
+            self._stud_data = deepcopy(data)
             return self._stud_data
-            
-        non_key_deleter(data,avl_key)
 
         return data
 
@@ -296,7 +285,7 @@ class StudMark:
         returns :
                 Subject class to retrieve data about the subject
         """
-        data = self._stud_data.copy()
+        data = deepcopy(self._stud_data)
         marks = [data[name][subject] for name in data]
 
         class Subject:
@@ -388,7 +377,7 @@ class StudMark:
         returns :
                 Student class to retrieve data about the student
         """
-        data = self._stud_data.copy()
+        data = deepcopy(self._stud_data)
         stud_data = {name: data[name]}
         subjects = self._subjects.copy()
 
@@ -580,3 +569,4 @@ class StudMark:
                 mg_strt += len(each)
 
         work_book.save("student_info.xlsx")
+        print("student data has been saved")

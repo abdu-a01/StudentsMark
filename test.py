@@ -3,13 +3,26 @@
 from pathlib import Path
 import pytest
 from .student import StudMark, point_fun, gpa_fun, grade_fun, gpa, average
-from .student.calculate.one_stud.utility import file_checker, validator
+
 
 test_data = {
     "abdu": {"English": 87, "Maths": 92, "OOP": 97},
     "selam": {"English": 83, "Maths": 97, "OOP": 91},
 }
 
+def test_xlsx_input():
+	"""Testing the class with xlsx input 
+	"""
+	stud_data = StudMark("student_info.xlsx")
+	
+	assert stud_data.stud_data == test_data
+	
+def test_json_input():
+	"""Testing the class with json input 
+	"""
+	stud_data = StudMark("student_data.json")
+	
+	assert stud_data.stud_data == test_data
 
 # testing the class
 class TestStudMark:
@@ -55,8 +68,16 @@ class TestStudMark:
                 "OOP": {"mark": 91, "grade": "A+"},
             },
         }
-
-        assert self.test_mark.grade() == grade
+        
+        not_update = self.test_mark.grade()
+        assert (
+        	not_update == grade and
+        	self.test_mark.stud_data != grade
+        )
+        
+        self.test_mark.grade(update=True)
+        
+        assert self.test_mark.stud_data == grade
 
     def test_point(self):
         """testing point method"""
@@ -72,8 +93,17 @@ class TestStudMark:
                 "OOP": {"mark": 91, "point": 4.0},
             },
         }
+        
+        not_update = self.test_mark.point()
+        assert (
+        	not_update == point and
+        	self.test_mark.stud_data != point
+        )
+        
+        self.test_mark.point(update=True)
+        
+        assert self.test_mark.stud_data == point
 
-        assert self.test_mark.point() == point
 
     def test_gpa(self):
         """testing gpa method"""
@@ -81,8 +111,17 @@ class TestStudMark:
             "abdu": {"English": 87, "Maths": 92, "OOP": 97, "gpa": 4.0},
             "selam": {"English": 83, "Maths": 97, "OOP": 91, "gpa": 3.92},
         }
+        
+        not_update = self.test_mark.gpa((3, 3, 3))
 
-        assert self.test_mark.gpa((3, 3, 3)) == gpa_var
+        assert (
+        	not_update == gpa_var and
+        	self.test_mark.stud_data != gpa_var
+        )
+        
+        self.test_mark.gpa((3, 3, 3),update=True)
+        
+        assert self.test_mark.stud_data == gpa_var
 
     def test_average(self):
         """testing average method"""
@@ -90,8 +129,18 @@ class TestStudMark:
             "abdu": {"English": 87, "Maths": 92, "OOP": 97, "average": 92.0},
             "selam": {"English": 83, "Maths": 97, "OOP": 91, "average": 90.33},
         }
+        
+        not_update = self.test_mark.average()
+        
+        assert (
+        	not_update == aver and
+        	self.test_mark.stud_data != aver
+        )
+        
+        self.test_mark.average(update=True)
+        
+        assert self.test_mark.stud_data == aver
 
-        assert self.test_mark.average() == aver
 
     def test_ranker(self):
         """testing ranker method"""
@@ -100,9 +149,21 @@ class TestStudMark:
             "selam": {"English": 83, "Maths": 97, "OOP": 91, "rank": 2},
         }
 
-        test = self.test_mark.ranker()
 
-        assert test == rank
+        
+        not_update = self.test_mark.ranker()
+        
+        assert (
+        	not_update == rank and
+        	self.test_mark.stud_data != rank
+        )
+        
+        self.test_mark.ranker(update=True)
+        
+        assert self.test_mark.stud_data == rank
+
+
+
 
     def test_id_giver(self):
         """testing id_giver method"""
