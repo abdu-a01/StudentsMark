@@ -1,3 +1,21 @@
+Metadata-Version: 2.1
+Name: StudentsMark
+Version: 0.1.0
+Summary: A students mark information retrieving and calculation package.
+Author-email: Abduselam Awel <abdselam676@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/abdu-a01/StudentsMark.git
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: openpyxl>=3.1.5
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+
 # Students Mark 
 **Students Mark** is clear and easy to use for retrieve information about students mark.
 
