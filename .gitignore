@@ -3,6 +3,6 @@ student_data.json
 student_info.xlsx
 .pytest_cache
 .mypy_cache
-Students_Mark.egg-info
+StudentsMark.egg-info
 build
 dist
